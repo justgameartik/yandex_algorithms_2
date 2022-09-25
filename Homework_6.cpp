@@ -373,57 +373,159 @@ int main()
 		cout << '\n' << result[i][0] << ' ' << result[i][1] << ' ' << result[i][2];
 }
 */
-/* H\w 6. Task E
+/* H\w 6. Task E 
 #include <iostream>
 #include <vector>
 #include <algorithm>
 using namespace::std;
 
-bool Win_or_lose(long long money_spend, vector<vector<long long>> party, vector<long long> difference)
+long long Add_votes(long long i, vector<vector<long long>> party, vector<long long> suffix_sum, long long level)
 {
-	
-	for (long long i = 0; i < party.size(); i++)
+	long long l = 0, r = party.size() - 1;
+	while (l < r)
 	{
-		if (party[i][2] == -1)
-			continue;
-
-		long long lost_money = party[i][2];
-		long long local_voters = party[i][1];
-
-		long long max_voters = party[party.size() - 1][1];
-
-		long long index = 0;
-		while (local_voters <= max_voters)
-		{
-			long long temp = difference[difference.size() - index - 1];
-			local_voters += temp * (index + 1);
-			lost_money += temp * (index + 1);
-			max_voters -= temp;
-			index += 1;
-		}
-
-		index -= 1;
-		local_voters -= difference[difference.size() - index - 1] * (index + 1);
-		lost_money -= difference[difference.size() - index - 1] * (index + 1);
-		max_voters += difference[difference.size() - index - 1];
-
-		long long temp = (max_voters * (index + 1) + local_voters) / (index + 2);
-		max_voters -= (temp - local_voters) / (index + 1);
-		local_voters += ((temp - local_voters) / (index + 1)) * (index + 1);
-		lost_money += ((temp - local_voters) / (index + 1)) * (index + 1);
-
-		local_voters += max_voters - local_voters + 1;
-		lost_money += max_voters - local_voters + 1;
-
-		if (lost_money <= money_spend)
-			return true;
+		long long m = (l + r) / 2;
+		if (party[m][1] < level)
+			l = m + 1;
+		else
+			r = m;
 	}
-	return false;
+	if (party[l][0] < level)
+		return 0;
+	
+	long long added = suffix_sum[l] - level * (party.size() - 1);
+	if (party[i][1] >= level)
+		added -= (party[i][1] - level);
+
+	return added;
+}
+
+void Modeling(vector<vector<long long>>party,long long i, vector<long long> suffix_sum,
+	long long& cost, long long& level, long long& recovery)
+{
+	long long min_value = 0;
+	long long max_value = 1000001;
+	while (max_value > min_value)
+	{
+		long long level = (max_value + min_value + 1) / 2;
+		long long count_votes = Add_votes(i, party, suffix_sum, level);
+
+		if (count_votes + party[i][2] > level)
+			min_value = level;
+		else
+			max_value = level - 1;
+	}
+	long long count_votes = Add_votes(i, party, suffix_sum, min_value);
+	if (recovery > party[i][1] + count_votes - min_value - 2)
+		recovery = party[i][1] + count_votes - min_value - 2;
+	else
+		recovery = 0;
+	cost = count_votes - recovery; level = min_value;
+	recovery = recovery;
+
 }
 
 bool Sort_col(const vector<long long>& v1, const vector<long long>& v2)
 {
 	return v1[1] < v2[1];
+}
+
+bool Sort_col_last(const vector<long long>& v1, const vector<long long>& v2)
+{
+	return v1[0] < v2[0];
+}
+
+int main()
+{
+	long long n; cin >> n;
+	vector<vector<long long>> party;
+	
+	for (long long i = 0; i < n; i++)
+	{
+		vector<long long> temp;
+		long long temp_1, temp_2;
+		cin >> temp_1 >> temp_2;
+		temp.push_back(i + 1); temp.push_back(temp_1); temp.push_back(temp_2);
+
+		party.push_back(temp);
+	}
+
+	sort(party.begin(), party.end(), Sort_col);
+	
+	vector<long long> suffix_sum;
+	suffix_sum.resize(n);
+	suffix_sum[suffix_sum.size() - 1] = party[suffix_sum.size() - 1][1];
+	for (long long i = n - 2; i > -1; i--)
+		suffix_sum[i] = suffix_sum[i + 1] + party[i][1];
+
+	long long min_needed_money = 1000000000;
+
+
+	long long cost, level, recovery, winner;
+	for (long long i = 0; i < n; i++)
+	{
+		if (party[i][2] == -1)
+			continue;
+		else
+		{
+			Modeling(party, i, suffix_sum, cost, level, recovery);
+			if (party[i][2] + cost < min_needed_money)
+			{
+				min_needed_money = party[i][2] + cost;
+				winner = i;
+			}
+		}
+	}
+
+	vector<long long> result; result.resize(n);
+
+	for (long long i = 0; i < n; i++)
+	{
+		if (i == winner)
+			result[party[i][0]] = party[i][1] + cost;
+		else
+		{
+			if (party[i][1] <= level)
+				result[party[i][0]] = party[i][1];
+			else
+			{
+				if (recovery > 0)
+				{
+					result[party[i][0]] = level + 1;
+					recovery -= 1;
+				}
+				else
+					result[party[i][0]] = level;
+			}
+		}
+	}
+
+	cout << min_needed_money << '\n' << party[winner][1] + 1 << '\n';
+	for (long long i = 0; i < n; i++)
+		cout << result[i]<< ' ';
+
+}
+*/
+
+/*
+
+bool Haircut(vector<vector<long long>> party, long long target_party, long long m, long long& new_score)
+{
+	long long index = party.size() - 1;
+	long long local_voters = party[target_party][1];
+	while (party[index][1] > m)
+	{
+		local_voters += party[index][1] - m;
+		index -= 1;
+	}
+
+	if (local_voters > m)
+	{
+		new_score = local_voters;
+		return true;
+	}
+	else
+		return false;
 }
 
 int main()
@@ -444,22 +546,48 @@ int main()
 	}
 
 	sort(party.begin(), party.end(), Sort_col);
-	
-	vector<long long> difference;
-	for (long long i = 0; i < party.size() - 1; i++)
-		difference.push_back(party[i][1] - party[i + 1][1]);
 
-	long long max_spend = all_voters + max_gift;
-	long long min_spend = 0;
-	while (max_spend > min_spend)
+	long long min_needed_money = all_voters + max_gift + 1;
+	long long winner_party = 0, haircut_level = 0;
+	for (long long i = 0; i < party.size(); i++)
 	{
-		long long m = (max_spend + min_spend) / 2;
+		if (party[i][2] == -1)
+			continue;
 
-		if (Win_or_lose(m, party, difference))
-			max_spend = m;
-		else
-			min_spend = m + 1;
+		long long max_value = party[party.size() - 1][1];
+		long long min_value = party[i][1];
+		long long new_score = min_value;
+		while (max_value > min_value)
+		{
+			long long m = (max_value + min_value + 1) / 2;
+
+			if (Haircut(party, i, m, new_score))
+				min_value = m;
+			else
+				max_value = m - 1;
+		}
+		Haircut(party, i, max_value, new_score);
+
+		if (new_score - party[i][1] + party[i][2] < min_needed_money)
+		{
+			min_needed_money = new_score - party[i][1] + party[i][2];
+			winner_party = i;
+			haircut_level = max_value;
+		}
 	}
-	cout << max_spend;
+
+	cout << min_needed_money << '\n' << party[winner_party][0] << '\n';
+
+	long long index = party.size() - 1;
+	while (party[index][1] > haircut_level)
+	{
+		party[winner_party][1] += party[index][1] - haircut_level;
+		party[index][1] = haircut_level;
+		index -= 1;
+	}
+	
+	sort(party.begin(), party.end(), Sort_col_last);
+	for (long long i = 0; i < party.size(); i++)
+		cout << party[i][1] << ' ';
 }
 */
