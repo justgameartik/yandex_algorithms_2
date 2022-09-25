@@ -235,6 +235,293 @@ int main()
 }
 */
 
+/* H\w 7. Task D 
+#include <iostream>
+#include <vector>
+#include <set>
+#include <map>
+#include <algorithm>
+using namespace::std;
+
+int main()
+{
+	int civ_amount; cin >> civ_amount;
+
+	vector<vector<long long>> date;
+	for (int i = 0; i < civ_amount; i++)
+	{
+		long long date_beg, date_end;
+		cin >> date_beg >> date_end;
+		
+		vector<long long> temp;
+		temp.push_back(date_beg); temp.push_back(1); temp.push_back(i);
+		date.push_back(temp);
+
+		temp[0] = date_end; temp[1] = -1; 
+		date.push_back(temp);
+	}
+
+	sort(date.begin(), date.end());
+	long long answer = 2500000000; map<long long ,set<int>> date_beg;
+	vector<int> answer_civ; answer_civ.resize(2);
+
+
+	long long date_birth = 0; int birth_civ = 0; set<int> civ_alive;
+	for (int i = 0; i < (int)date.size() - 1; i++)
+	{
+		if (date[i][1] == 1)
+		{
+			date_birth = date[i][0];
+			birth_civ = date[i][2];
+			civ_alive.insert(birth_civ);
+		}
+		else
+		{
+			if (civ_alive.size() > 1)
+			{
+				long long diff = date[i][0] - date_birth;
+				if (diff < answer && diff != 0)
+				{
+					answer = diff;
+					answer_civ[0] = date[i][2] + 1;
+
+					if (date[i][2] == birth_civ)
+					{
+						civ_alive.erase(date[i][2]);
+						set<int>::iterator it = civ_alive.begin();
+						answer_civ[1] = *it + 1;
+					}
+					else
+						answer_civ[1] = birth_civ + 1;
+				}
+			}
+
+			civ_alive.erase(date[i][2]);
+		}
+
+	}
+
+
+	//for (int i = 0; i < (int)date.size() - 1; i++)
+	//{
+	//	if (date[i][1] == -1)
+	//	{
+	//		date_beg[date[i][0]].insert(date[i][2]);
+	//	}
+	//	else
+	//	{
+	//		int max_index = (int)date_beg.size() - 1;
+	//		int min_index = 0;
+	//		while (max_index > min_index)
+	//		{
+	//			int m = (max_index + min_index + 1) / 2;
+	//			
+	//			map<long long, set<int>>::iterator it = next(date_beg.begin(), m);
+	//			if (it->first < date[i][0])
+	//				min_index = m;
+	//			else
+	//				max_index = m - 1;
+	//		}
+	//		
+	//		map<long long, set<int>>::iterator it = next(date_beg.begin(), max_index);
+
+	//		if (it->second.find(date[i][2]) != it->second.end() && it->second.size() == 1)
+	//		{
+	//			max_index -= 1;
+	//			if (max_index >=0)
+	//				it = next(date_beg.begin(), max_index);
+	//		}
+
+	//		if (max_index >= 0)
+	//		{
+	//			long long first_cross = max(it->first,date[i][3]);
+	//			long long last_cross = date[i][0];
+	//			
+	//			if (last_cross - first_cross < answer && last_cross - first_cross != 0)
+	//			{
+	//				answer = last_cross - first_cross;
+	//				answer_civ[1] = date[i][2] + 1;
+	//				set<int>::iterator set_it;
+	//				for (set_it = it->second.begin(); set_it != it->second.end(); set_it++)
+	//					if (*set_it != date[i][2])
+	//					{
+	//						answer_civ[0] = *set_it + 1;
+	//						break;
+	//					}
+	//			}
+	//		}
+	//		set<int>::iterator set_it = date_beg[date[i][3]].find(date[i][2]);
+	//		date_beg[date[i][3]].erase(set_it);
+	//		//if (date_beg[date[i][3]].empty())
+	//		//	date_beg.erase(date[i][3]);
+	//	}
+	//}
+
+	if (answer != 2500000000)
+	{
+		sort(answer_civ.begin(), answer_civ.end());
+		cout << answer_civ[0] << ' ' << answer_civ[1];
+	}
+	else
+		cout << 0;
+}
+
+
+/*
+#include <iostream>
+#include <vector>
+using namespace::std;
+
+int main()
+{
+	vector<long long> test_1 = { 0, 1, 10, 100, 1000 };
+	vector<long long> test_2 = { 0, 2, 20, 200, 2000 };
+	vector<long long> test_3 = { 0, 3, 30, 300, 3000 };
+
+	vector<vector<long long>> test = { test_1, test_2, test_3 };
+	
+	vector<long long> test_remove = { 0, 2, 20, 200, 2000 };
+	auto it = remove(test.begin(), test.end(), test_remove);
+	test.erase(it);
+
+	for (int i = 0; i < test.size(); i++)
+	{
+		for (int j = 0; j < test[i].size(); j++)
+			cout << test[i][j] << ' ';
+		cout << '\n';
+	}
+}
+*/
+/*
+#include <iostream>
+#include <map>
+#include <set>
+using namespace::std;
+
+int main()
+{
+	map<int, set<int>> test;
+	set<int> test_set;
+	
+	test_set.insert(1); test_set.insert(2); test_set.insert(3);
+	test[1] = test_set;
+
+	set<int> test_set_1;
+	test_set_1.insert(4); test_set_1.insert(5); test_set_1.insert(6);
+	test[2] = test_set_1;
+
+	map<int, set<int>>::iterator it = test.begin();
+
+	it->second.erase(2); it->second.erase(3); it->second.erase(1);
+	if (it->second.empty())
+		test.erase(it->first);
+
+	for (it = test.begin(); it != test.end(); it++)
+	{
+		set<int>::iterator set_it;
+		cout << it->first << '\t';
+		for (set_it = it->second.begin(); set_it != it->second.end(); set_it++)
+			cout << *set_it << ' ';
+	}
+}*/
+
+/* H\w 7. Task E 
+#include <iostream>
+#include <vector>
+#include <set>
+#include <map>
+#include <algorithm>
+using namespace::std;
+
+typedef long long ll;
+
+int main()
+{
+	int line_amount;
+	cin >> line_amount;
+
+	vector<vector<ll>> dots;
+	dots.resize(line_amount);
+	for (int i = 0; i < line_amount; i++)
+	{
+		vector<ll> temp;
+		ll x_1, x_2;
+		cin >> x_1 >> x_2;
+		temp.push_back(-x_2);
+		temp.push_back(x_1);
+		temp.push_back(i);
+		dots[i] = temp;
+	}
+
+	sort(dots.begin(), dots.end());
+
+	vector<int>answer; answer.resize(line_amount);
+	for (int i = 0; i < line_amount; i++)
+		answer[i] = 0;
+
+	set<vector<ll>> opened_lines;
+	for (int i = (int)dots.size() - 1; i >=0; i--)
+	{	
+		vector<ll> temp;
+		temp.push_back(dots[i][1]);
+		temp.push_back(dots[i][0]);
+		temp.push_back(dots[i][2]);
+
+		set<vector<ll>>::iterator it = opened_lines.upper_bound(temp);
+		while(it != opened_lines.end())
+		{
+			answer[it->at(2)] = dots[i][2] + 1;
+			opened_lines.erase(it);
+			it = opened_lines.upper_bound(temp);
+		}
+		temp[1] = dots[i][0];
+		opened_lines.insert(temp);
+	}
+
+	for (int i = 0; i < (int)answer.size(); i++)
+		cout << answer[i] << ' ';
+}
+
+
+/*
+#include <iostream>
+#include <vector>
+#include <set>
+#include <algorithm>
+using namespace::std;
+
+int main()
+{
+	set<vector<int>> test_set;
+	vector<int> test_v;
+	test_v.push_back(1); test_v.push_back(2); test_v.push_back(3);
+	test_set.insert(test_v);
+
+	test_v[0] = 4; test_v[1] = 5; test_v[2] = 6;
+	test_set.insert(test_v);
+
+	vector<int> test_erase;
+	test_erase.push_back(1); test_erase.push_back(2); test_erase.push_back(3);
+
+	set<vector<int>>::iterator it;
+	for (it = test_set.begin(); it != test_set.end(); it++)
+	{
+		for (int j = 0; j < it->size(); j++)
+			cout << it->at(j);
+		cout << '\n';
+	}
+
+	test_set.erase(test_erase);
+	cout << '\n';
+
+	for (it = test_set.begin(); it != test_set.end(); it++)
+	{
+		for (int j = 0; j < it->size(); j++)
+			cout << it->at(j);
+		cout << '\n';
+	}
+}
+*/
 /* H\w 7. Task D */
 #include <iostream>
 #include <vector>
