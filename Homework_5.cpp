@@ -402,6 +402,7 @@ int main()
 }
 */
 
+/* H\w 5. Task B
 #include <iostream>
 #include <vector>
 using namespace::std;
@@ -588,3 +589,4 @@ int main()
         }
     }
 }
+*/
