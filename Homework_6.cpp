@@ -258,3 +258,208 @@ int main()
 }
 */
 
+/* H\w 6. Task D 
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace::std;
+
+bool Is_possible(vector<vector<long long>> a_deer, vector<vector<long long>> b_elf, 
+	int possible_ans, vector<vector<long long>>& result)
+{
+	long long deers_index = 0;
+	
+	for (long long i = 0; i < possible_ans; i++)
+	{
+		long long r_elf_index = b_elf.size() - possible_ans + i;
+
+		while (deers_index < a_deer.size() && a_deer[deers_index][1] <= b_elf[i][1])
+			deers_index += 1;
+
+		if (deers_index == a_deer.size() || a_deer[deers_index][1] >= b_elf[r_elf_index][1])
+			return false;
+
+		vector<long long> temp;
+		temp.push_back(a_deer[deers_index][0]); temp.push_back(b_elf[i][0]); 
+		temp.push_back(b_elf[r_elf_index][0]);
+
+		result.push_back(temp);
+	}
+
+	//int elf_index = 0;
+	//while (elf_index < possible_ans)
+	//{
+	//	if (deers_index >= a_deer.size())
+	//	{
+	//		result.clear();
+	//		return false;
+	//		break;
+	//	}
+
+	//	if (possible_ans > b_elf.size() / 2)
+	//	{
+	//		result.clear();
+	//		return false;
+	//		break;
+	//	}
+
+	//	if (b_elf[elf_index][1] >= a_deer[deers_index][1] || 
+	//		b_elf[b_elf.size() - possible_ans + elf_index][1] <= a_deer[deers_index][1])
+	//			deers_index += 1;
+	//	else
+	//	{
+	//		vector<int> temp;
+	//		temp.push_back(a_deer[deers_index][0]); temp.push_back(b_elf[elf_index][0]);
+	//		temp.push_back(b_elf[b_elf.size() - possible_ans + elf_index][0]);
+	//		
+	//		result.push_back(temp);
+
+	//		elf_index += 1;
+	//	}
+	//}
+
+	return true;
+}
+
+bool Sort_col(const vector<long long>& v1, const vector<long long>& v2)
+{
+	return v1[1] < v2[1];
+}
+
+int main()
+{
+	long long deer_amount, elf_amount;
+	cin >> deer_amount >> elf_amount;
+
+	vector<vector<long long>> a_deer;
+	for (long long i = 0; i < deer_amount; i++)
+	{
+		long long temp; cin >> temp;
+		vector<long long> vec_temp;
+		vec_temp.push_back(i + 1); vec_temp.push_back(temp);
+		a_deer.push_back(vec_temp);
+	}
+
+	vector<vector<long long>> b_elf;
+	for (long long i = 0; i < elf_amount; i++)
+	{
+		long long temp; cin >> temp;
+		vector <long long> vec_temp;
+		vec_temp.push_back(i + 1); vec_temp.push_back(temp);
+		b_elf.push_back(vec_temp);
+	}
+
+	sort(a_deer.begin(), a_deer.end(), Sort_col);
+	sort(b_elf.begin(), b_elf.end(), Sort_col);
+
+	vector<vector<long long>> result;
+	long long max_deers = min(a_deer.size(), b_elf.size() / 2);
+	long long min_deers = 0;
+	while (max_deers > min_deers)
+	{
+		long long m = (max_deers + min_deers + 1) / 2;
+		if (Is_possible(a_deer, b_elf, m, result))
+			min_deers = m;
+		else
+			max_deers = m - 1;
+
+		result.clear();
+	}
+
+	Is_possible(a_deer, b_elf, max_deers, result);
+	
+	cout << min_deers;
+	for (long long i = 0; i < min_deers; i++)
+		cout << '\n' << result[i][0] << ' ' << result[i][1] << ' ' << result[i][2];
+}
+*/
+/* H\w 6. Task E
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace::std;
+
+bool Win_or_lose(long long money_spend, vector<vector<long long>> party, vector<long long> difference)
+{
+	
+	for (long long i = 0; i < party.size(); i++)
+	{
+		if (party[i][2] == -1)
+			continue;
+
+		long long lost_money = party[i][2];
+		long long local_voters = party[i][1];
+
+		long long max_voters = party[party.size() - 1][1];
+
+		long long index = 0;
+		while (local_voters <= max_voters)
+		{
+			long long temp = difference[difference.size() - index - 1];
+			local_voters += temp * (index + 1);
+			lost_money += temp * (index + 1);
+			max_voters -= temp;
+			index += 1;
+		}
+
+		index -= 1;
+		local_voters -= difference[difference.size() - index - 1] * (index + 1);
+		lost_money -= difference[difference.size() - index - 1] * (index + 1);
+		max_voters += difference[difference.size() - index - 1];
+
+		long long temp = (max_voters * (index + 1) + local_voters) / (index + 2);
+		max_voters -= (temp - local_voters) / (index + 1);
+		local_voters += ((temp - local_voters) / (index + 1)) * (index + 1);
+		lost_money += ((temp - local_voters) / (index + 1)) * (index + 1);
+
+		local_voters += max_voters - local_voters + 1;
+		lost_money += max_voters - local_voters + 1;
+
+		if (lost_money <= money_spend)
+			return true;
+	}
+	return false;
+}
+
+bool Sort_col(const vector<long long>& v1, const vector<long long>& v2)
+{
+	return v1[1] < v2[1];
+}
+
+int main()
+{
+	int party_amount; cin >> party_amount;
+	vector<vector<long long>> party;
+
+	long long all_voters = 0, max_gift = -1;
+	for (int i = 0; i < party_amount; i++)
+	{
+		int temp_1, temp_2; cin >> temp_1 >> temp_2;
+		all_voters += temp_1; 
+		if (temp_2 > max_gift)
+			max_gift = temp_2;
+
+		vector<long long> temp; temp.push_back(i + 1); temp.push_back(temp_1); temp.push_back(temp_2);
+		party.push_back(temp);
+	}
+
+	sort(party.begin(), party.end(), Sort_col);
+	
+	vector<long long> difference;
+	for (long long i = 0; i < party.size() - 1; i++)
+		difference.push_back(party[i][1] - party[i + 1][1]);
+
+	long long max_spend = all_voters + max_gift;
+	long long min_spend = 0;
+	while (max_spend > min_spend)
+	{
+		long long m = (max_spend + min_spend) / 2;
+
+		if (Win_or_lose(m, party, difference))
+			max_spend = m;
+		else
+			min_spend = m + 1;
+	}
+	cout << max_spend;
+}
+*/
