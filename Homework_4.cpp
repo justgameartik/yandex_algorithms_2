@@ -102,11 +102,11 @@ int main()
 	delete[] word; delete[] table;
 }
 */
-/* H\w 4. Task C */
+/* H\w 4. Task C 
 #include <iostream>
 #include <map>
 #include <set>
-#include <random>
+#include <string>
 using namespace::std;
 
 int main()
@@ -114,38 +114,43 @@ int main()
 	int stones_amount, pairs_amount;
 	cin >> stones_amount >> pairs_amount;
 
-	string stones; cin >> stones;
-
-	map<char, string> beauty_pairs;
-	for (int i = 0; i < pairs_amount; i++)
+	string stones;
+	for (int i = 0; i < stones_amount; i++)
 	{
-		string temp; cin >> temp;
-		beauty_pairs[temp[0]].push_back(temp[1]);
+		char temp;
+		cin >> temp;
+		stones.push_back(temp);
 	}
 
+	map<char, set<char>> beauty_pair;
+
+	for (int i = 0; i < pairs_amount; i++)
+	{
+		string temp;
+		cin >> temp;
+		beauty_pair[temp[0]].insert(temp[1]);
+	}
+
+	long long count = 0;
 	int count_letters[26];
 	for (int i = 0; i < 26; i++)
 		count_letters[i] = 0;
-	
-	int count = 0;
-	for (int i = stones.length() - 1; i >= 0; i--)
+
+	for (int i = stones.length() - 1; i >=0; i--)
 	{
-		if (beauty_pairs.find(stones[i]) != beauty_pairs.end())
+		if (beauty_pair.find(stones[i]) != beauty_pair.end())
 		{
 			for (int j = 0; j < 26; j++)
-			{
-				if (beauty_pairs[stones[i]].find(char(j + 'a')) != string::npos)
-				{
+				if (beauty_pair[stones[i]].find(char(j + 'a')) != beauty_pair[stones[i]].end())
 					count += count_letters[j];
-				}
-			}
 		}
+
 		count_letters[int(stones[i] - 'a')] += 1;
 	}
 
 	cout << count;
 }
-
+*/
 
 /* H\w 4. Task D 
 #include <iostream>
