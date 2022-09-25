@@ -228,7 +228,7 @@ int main()
 	delete[] player_score; delete[] players_numbers;
 }
 */
-
+/* H\w 3. Task E*
 #include <iostream>
 #include <string>
 #include <math.h>
@@ -312,7 +312,7 @@ string Plus_long_numbers(string first_str, string second_str)
 			j++;
 		}
 	}
-	cout << endl;*/
+	cout << endl;
 	return result;
 }
 
@@ -343,3 +343,76 @@ int main()
 			cout << "Yes" << '\n';
 	}
 }
+*/
+
+/* H\w 3. Task B
+#include <iostream>
+#include <set>
+#include <string>
+using namespace::std;
+
+void Sort(int** arr, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		if (arr[i][0] > arr[i][1])
+		{
+			int temp = arr[i][0];
+			arr[i][0] = arr[i][1];
+			arr[i][1] = temp;
+		}
+	}
+}
+
+int main()
+{
+	int vertex_amount, edges_amount;
+	cin >> vertex_amount >> edges_amount;
+
+	int** edge = new int*[edges_amount];
+	for (int i = 0; i < edges_amount; i++)
+	{
+		edge[i] = new int[2];
+		for (int j = 0; j < 2; j++)
+			cin >> edge[i][j];
+	}
+
+	Sort(edge, edges_amount);
+
+	set<string> new_graph;
+	//set<int> new_graph_vertex_amount;
+
+	for (int i = 0; i < edges_amount; i++)
+	{
+		if (edge[i][0] != edge[i][1])
+		{
+			//new_graph_vertex_amount.insert(edge[i][0]);
+			//new_graph_vertex_amount.insert(edge[i][1]);
+			
+			string temp;
+			temp.append(to_string(edge[i][0]));
+			temp.push_back('-');
+			temp.append(to_string(edge[i][1]));
+
+			if (new_graph.find(temp) == new_graph.end())
+				new_graph.insert(temp);
+		}
+	}
+
+	cout << vertex_amount << ' ' << new_graph.size() << '\n';
+	
+	for (auto s : new_graph)
+	{
+		for (int i = 0; i < s.length(); i++)
+		{
+			if (s[i] != '-')
+				cout << s[i];
+			else
+				cout << ' ';
+		}
+		cout << '\n';
+	}
+
+	for (int i = 0; i < edges_amount; i++)
+		delete[] edge[i];
+}*/
